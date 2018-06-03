@@ -1,0 +1,94 @@
+---
+title: Potato
+permalink: /potato.html
+---
+
+<!DOCTYPE HTML>
+<html lang="en-US">
+
+  <script type="text/javascript">
+
+    var notify = function(msg) {
+        if (!"Notification" in window) {
+            console.log("this browser does not support Notification");
+            return;
+        }
+
+        var createNotification = function() {
+            var options = {
+                tag: "potato",
+                renotify: true
+            };
+
+            new Notification(msg, options);
+        };
+
+        if (Notification.permission == "granted") {
+            createNotification();
+        } else if (Notification.permission != "denied") {
+            Notification.requestPermission(function(permission) {
+                if (permission == "granted") {
+                    createNotification();
+                }
+            });
+        }
+    }
+
+    var i;
+    var reset = function() {
+    
+        clearInterval(i);
+        var max_seconds = 20 * 60 * 1000;
+        var label = document.getElementById("potato");
+        var begin_time = Date.now();
+
+        function a(i) {
+            if (i > 9) {
+                return i + "";
+            }
+            return "0" + i;
+        }
+
+        i = setInterval(function() {
+            var current_time = Date.now();
+            var elapse = current_time - begin_time;
+            var l = max_seconds - elapse;
+            var minute = Math.floor(l / 1000 / 60);
+            var second = Math.floor(l / 1000 % 60);
+            var millisecond = Math.floor(l % 1000 / 10);
+            if (l < 0) {
+                minute = second = millisecond = 0;
+		clearInterval(i);
+		notify("Potato Time's up ~");
+       	    }
+	    label.innerHTML = a(minute) + ":" + a(second) + ":" + a(millisecond);
+        }, 75);
+    };
+
+    window.onload = function() {
+        reset();
+    }
+
+  </script>
+
+  <style>
+    #potato {
+      color: #ccc;
+      font-size: 10em;
+      text-align: center;
+    }
+    #reset {
+      font-size:5em;
+      float: right;
+      margin-right: 20%;
+    }
+  </style>
+
+  <body>
+    <h1>Potato Time</h1>
+
+    <h1 id="potato">00:00:00</h1>
+
+    <button id="reset" onclick="reset()">重置</button>
+  </body>
+</html>
