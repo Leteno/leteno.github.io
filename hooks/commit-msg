@@ -1,0 +1,43 @@
+#!/bin/bash
+
+function main() {
+  for changed_file in `git diff --cached --name-only --diff-filter=d`; do
+    echo hello "$changed_file"
+    update_date "$changed_file"
+  done
+  exit 1
+}
+
+function update_date() {
+  file=$1
+  danger=N
+  if [ -n ""`git diff $file` ]; then
+    danger=T
+  fi
+  if is_mac ; then
+    sed -e "s/^date: .*/date: `date '+%Y-%m-%d'`/" -i "" $file
+  else
+    sed -e "s/^date: .*/date: `date '+%Y-%m-%d'`/" -i $file
+  fi
+  if [ "$danger" = "N" ]; then
+    git add $file
+  fi
+}
+
+function is_mac() {
+  if [ `uname` = "Darwin" ]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+function is_linux() {
+  if [ `uname` = "Linux" ]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+main
